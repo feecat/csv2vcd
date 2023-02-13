@@ -66,25 +66,26 @@ class MainWindow():
                         multi = 1000 ** i
                 dataline = fo.readline()#empty line
 
-                fw.writelines('$timescale 1 ns $end\n')
-                fw.writelines('$scope module libsigrok $end\n')
-                fw.writelines('$var real 64 % A0 $end\n')
-                fw.writelines('$var real 64 & A1 $end\n')
-                fw.writelines('$upscope $end\n')
-                fw.writelines('$enddefinitions $end\n')
-
                 dataline = fo.readline()#first data line
                 channel = dataline.count(',')
                 timebase = dataline.split(',')[0]
                 data = dataline.split(',')
                 data[channel]=data[channel][:len(data[channel])-1] #remove \n
-                for i in range(channel - 1):
+                for i in range(channel):
                     data[i+1] = data[i+1] if len(data[i+1]) > 2 else '0'
                 string = '#' + str(round((float(data[0])-float(timebase))*multi)) + ' r' + data[1] + ' % '
                 if channel == 1:
                     string = string + '\n'
                 elif channel == 2:
                     string = string + 'r' + data[2] + ' & ' + '\n'
+                
+                fw.writelines('$timescale 1 ns $end\n')
+                fw.writelines('$scope module libsigrok $end\n')
+                fw.writelines('$var real 64 % A0 $end\n')
+                if channel > 1:
+                    fw.writelines('$var real 64 & A1 $end\n')
+                fw.writelines('$upscope $end\n')
+                fw.writelines('$enddefinitions $end\n')
                 fw.writelines(string)
 
                 linenum = 4
@@ -94,7 +95,7 @@ class MainWindow():
                     data[channel]=data[channel][:len(data[channel])-1] #remove \n
                     if linenum == 5:
                         factor = str(round((float(data[0])-float(timebase))*multi))
-                    for i in range(channel - 1):
+                    for i in range(channel):
                         data[i+1] = data[i+1] if len(data[i+1]) > 2 else '0'
                     string = '#' + str(round((float(data[0])-float(timebase))*multi)) + ' r' + data[1] + ' % '
                     if channel == 1:
