@@ -10,7 +10,7 @@ class MainWindow():
 
         self.sourcefile=''
         self.outputfile=''
-        self.seperator=','
+        self.separator=','
         self.triggervoltage=1.8
 
         my_font1=('times', 18, 'bold')
@@ -26,10 +26,10 @@ class MainWindow():
         self.outputfilevar.set("Please Select Output file.")
         self.w2 = tk.Label(self.tw, textvariable=self.outputfilevar).pack()
 
-        self.b4 = tk.Button(self.tw, text='change seperator , or ;', width=20,command = self.change_separator).pack()
-        self.seperatorvar = tk.StringVar()
-        self.seperatorvar.set("Seperator is: " + self.seperator)
-        self.w4 = tk.Label(self.tw, textvariable=self.seperatorvar).pack()
+        self.b4 = tk.Button(self.tw, text='change separator , or ;', width=20,command = self.change_).pack()
+        self.separatorvar = tk.StringVar()
+        self.separatorvar.set("Separator for column is: " + self.separator)
+        self.w4 = tk.Label(self.tw, textvariable=self.separatorvar).pack()
 
         self.b3 = tk.Button(self.tw, text='Start Converter', width=20,command = self.start_converter).pack()
         self.resultvar = tk.StringVar()
@@ -37,12 +37,12 @@ class MainWindow():
         self.w3 = tk.Label(self.tw, textvariable=self.resultvar).pack()
         self.tw.mainloop()
 
-    def change_separator(self):
-        if self.seperator == ",":
-            self.seperator = ';'
+    def change_(self):
+        if self.separator == ",":
+            self.separator = ';'
         else:
-            self.seperator = ','
-        self.seperatorvar.set("Seperator is: " + self.seperator)
+            self.separator = ','
+        self.separatorvar.set("Separator is: " + self.separator)
         
     def check_dir(self):
         if len(self.sourcefile) > 0 and len(self.outputfile) > 0:
@@ -77,18 +77,18 @@ class MainWindow():
                 dataline = fo.readline()#first line, Multi language, we dont use it
                 dataline = fo.readline()#second line, we got timebase (ns, us, ms, s, min)
                 base = ['ns','us','ms','s']
-                time = dataline.split(self.seperator)[0][1:-1]
+                time = dataline.split(self.separator)[0][1:-1]
                 for i in range(len(base)):
                     if time == base[i]:
                         multi = 1000 ** i
                 dataline = fo.readline()#empty line
 
                 dataline = fo.readline()#first data line
-                dataline = dataline.replace(",", "." )#replace , with
+                dataline = dataline.replace(",", "." )#replace , with .
                 print('dataline:',dataline)
-                channel = dataline.count(self.seperator)
-                timebase = dataline.split(self.seperator)[0]
-                data = dataline.split(self.seperator)
+                channel = dataline.count(self.separator)
+                timebase = dataline.split(self.separator)[0]
+                data = dataline.split(self.separator)
                 data[channel]=data[channel][:len(data[channel])-1] #remove \n
                 for i in range(channel):
                     data[i+1] = data[i+1] if len(data[i+1]) > 2 else '0'
@@ -109,10 +109,10 @@ class MainWindow():
 
                 linenum = 4
                 for line in fo:
-                    line = line.replace(",", "." )#replace , with
+                    line = line.replace(",", "." )#replace , with .
                     print('line:',line)
                     linenum = linenum + 1
-                    data = line.split(self.seperator)
+                    data = line.split(self.separator)
                     data[channel]=data[channel][:len(data[channel])-1] #remove \n
                     if linenum == 5:
                         factor = str(round((float(data[0])-float(timebase))*multi))
